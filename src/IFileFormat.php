@@ -8,12 +8,16 @@
  * file that was distributed with this source code.
  */
 
-namespace Devtronic\ImageManipulator\Exception;
+namespace Devtronic\ImageManipulator;
 
-class FileNotFoundException extends \Exception
+
+interface IFileFormat
 {
-    public function __construct($filename)
-    {
-        parent::__construct(sprintf('File %s not found', $filename), 0, null);
-    }
+    /**
+     * Encodes the given image to specific format
+     *
+     * @param Image $image
+     * @return string The raw data which will be written into the file
+     */
+    public function encode(Image $image): string;
 }

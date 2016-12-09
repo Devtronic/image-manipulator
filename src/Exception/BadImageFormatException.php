@@ -11,13 +11,12 @@
 namespace Devtronic\ImageManipulator\Exception;
 
 use Devtronic\ImageManipulator\IFileLoader;
-use Exception;
 
 class BadImageFormatException extends \Exception
 {
     public function __construct(string $filename, IFileLoader $fileLoader)
     {
-        parent::__construct(sprintf('FileLoader "%s" could not load file %s', get_class($fileLoader), $filename), 0,
-            null);
+        $message = sprintf('FileLoader "%s" could not load file %s', get_class($fileLoader), $filename);
+        parent::__construct($message, 0, null);
     }
 }

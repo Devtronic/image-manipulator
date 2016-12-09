@@ -72,6 +72,28 @@ class Image
     }
 
     /**
+     * Saves the Image to File
+     *
+     * @param string $filename The output file
+     * @param IFileFormat $format The file format
+     * @return bool
+     * @throws \Exception
+     */
+    public function save(string $filename, IFileFormat $format)
+    {
+        $handle = fopen($filename, 'w+');
+        if ($handle === false) {
+            throw new \Exception(sprintf('Could not open %s for writing', $filename));
+        }
+
+        $data = $format->encode($this);
+        fwrite($handle, $data);
+        fclose($handle);
+
+        return true;
+    }
+
+    /**
      * Returns the Color for specific location
      *
      * @param int $x x-coordinate

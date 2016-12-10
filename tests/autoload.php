@@ -1,5 +1,5 @@
 <?php
-/*
+/**
  * This file is part of the Devtronic Image Manipulator package.
  *
  * (c) Julian Finkler <admin@developer-heaven.de>

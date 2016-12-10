@@ -11,8 +11,10 @@
 namespace Devtronic\Tests\ImageManipulator;
 
 use Devtronic\ImageManipulator\Color;
+use Devtronic\ImageManipulator\Enum\FlipMode;
 use Devtronic\ImageManipulator\FileLoader\BasicFileLoader;
 use Devtronic\ImageManipulator\Image;
+use Devtronic\ImageManipulator\Pen;
 use PHPUnit\Framework\TestCase;
 
 class ImageTest extends TestCase
@@ -114,6 +116,60 @@ class ImageTest extends TestCase
         $image->setPixel($x, $y, $color);
 
         $this->assertEquals($color, $image->getPixel($x, $y));
-
     }
+
+    public function testFill()
+    {
+        $image = new Image(30, 30);
+
+        $fillColor = new Color(255, 0, 0, 64);
+
+        $image->fill($fillColor);
+
+        $this->assertEquals($fillColor, $image->getPixel(15, 15));
+    }
+
+    public function testResize()
+    {
+        $imageFile = __DIR__ . '/resources/test.png';
+
+        $image = Image::createFromFile($imageFile, new BasicFileLoader());
+
+        $newWidth = 100;
+        $newHeight = 100;
+        $resample = true;
+
+        $image->resize($newWidth, $newHeight, $resample);
+
+        $this->assertSame($newWidth, $image->getWidth());
+        $this->assertSame($newHeight, $image->getHeight());
+    }
+
+    public function testFlip()
+    {
+        $imageFile = __DIR__ . '/resources/test.png';
+
+        $image = Image::createFromFile($imageFile, new BasicFileLoader());
+
+        $image->flip(FlipMode::FLIP_HORIZONTAL);
+
+        $expected_0_0 = new Color(255, 255, 0, 0);
+
+        $this->assertEquals($expected_0_0, $image->getPixel(0, 0));
+    }
+
+    public function testDrawLine()
+    {
+        $image = new Image(100, 100);
+
+        $penColor = new Color(255, 0, 0, 0);
+        $pen = new Pen($penColor);
+
+        $image->drawLine($pen, 0, 0, 100, 100);
+
+        $this->assertEquals($penColor, $image->getPixel(0, 0));
+        $this->assertEquals($penColor, $image->getPixel(50, 50));
+        $this->assertEquals($penColor, $image->getPixel(99, 99));
+    }
+
 }

@@ -10,6 +10,7 @@
 
 namespace Devtronic\ImageManipulator;
 
+use Devtronic\ImageManipulator\Enum\FlipMode;
 use Devtronic\ImageManipulator\Exception\BadImageFormatException;
 use Devtronic\ImageManipulator\Exception\FileNotFoundException;
 use Devtronic\ImageManipulator\FileLoader\BasicFileLoader;
@@ -28,6 +29,8 @@ class Image
     public function __construct(int $width, int $height)
     {
         $this->imageResource = imagecreatetruecolor($width, $height);
+        imagesavealpha($this->imageResource, true);
+        $this->fill(new Color(0, 0, 0, 127));
     }
 
     /**
@@ -79,7 +82,7 @@ class Image
      * @return bool
      * @throws \Exception
      */
-    public function save(string $filename, IFileFormat $format)
+    public function save(string $filename, IFileFormat $format): bool
     {
         $handle = fopen($filename, 'w+');
         if ($handle === false) {
@@ -91,6 +94,72 @@ class Image
         fclose($handle);
 
         return true;
+    }
+
+    /**
+     * Fills the image with given color
+     *
+     * @param Color $color The color to fill
+     * @return bool true on success or false on failure.
+     */
+    public function fill(Color $color): bool
+    {
+        return imagefill($this->imageResource, 0, 0, $color->toIndex($this));
+    }
+
+    /**
+     * Resize the Image
+     *
+     * @param int $newWidth The resized width
+     * @param int $newHeight The resized height
+     * @param bool $resample Use resampling
+     */
+    public function resize(int $newWidth, int $newHeight, bool $resample = true)
+    {
+        if ($newWidth <= 0 || $newHeight <= 0) {
+            throw new \InvalidArgumentException("\$newWidth and \$newHeight must be greater that 0");
+        }
+
+        $resized = new Image($newWidth, $newHeight);
+        list($width, $height) = array($this->getWidth(), $this->getHeight());
+        if ($resample === true) {
+            imagecopyresampled($resized->imageResource, $this->imageResource, 0, 0, 0, 0, $newWidth, $newHeight, $width,
+                $height);
+        } else {
+            imagecopyresized($resized->imageResource, $this->imageResource, 0, 0, 0, 0, $newWidth, $newHeight, $width,
+                $height);
+        }
+
+        $this->imageResource = $resized->imageResource;
+    }
+
+    /**
+     * Flips the image with given mode
+     *
+     * @param int $flipMode FlipMode
+     * @return bool true on success or false on failure.
+     * @see FlipMode
+     */
+    public function flip(int $flipMode = FlipMode::FLIP_HORIZONTAL): bool
+    {
+        return imageflip($this->imageResource, $flipMode);
+    }
+
+    /**
+     * Draws a line between to points
+     *
+     * @param Pen $pen Pen
+     * @param int $srcX Source X
+     * @param int $srcY Source Y
+     * @param int $trgX Target X
+     * @param int $trgY Target Y
+     * @return bool true on success or false on failure.
+     */
+    public function drawLine(Pen $pen, int $srcX, int $srcY, int $trgX, int $trgY): bool
+    {
+        imagesetthickness($this->imageResource, $pen->getWidth());
+        $color = $pen->getColor()->toIndex($this);
+        return imageline($this->imageResource, $srcX, $srcY, $trgX, $trgY, $color);
     }
 
     /**

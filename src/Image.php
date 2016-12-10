@@ -146,7 +146,7 @@ class Image
     }
 
     /**
-     * Draws a line between to points
+     * Draws a line between two points
      *
      * @param Pen $pen Pen
      * @param int $srcX Source X
@@ -160,6 +160,23 @@ class Image
         imagesetthickness($this->imageResource, $pen->getWidth());
         $color = $pen->getColor()->toIndex($this);
         return imageline($this->imageResource, $srcX, $srcY, $trgX, $trgY, $color);
+    }
+
+    /**
+     * Draw a rectangle
+     *
+     * @param Pen $pen Pen
+     * @param int $x X
+     * @param int $y Y
+     * @param int $width Rectangle-Width
+     * @param int $height Rectangle-Height
+     * @return bool
+     */
+    public function drawRectangle(Pen $pen, int $x, int $y, int $width, int $height): bool
+    {
+        imagesetthickness($this->imageResource, $pen->getWidth());
+        $color = $pen->getColor()->toIndex($this);
+        return imagerectangle($this->imageResource, $x, $y, $width + $x - 1, $height + $y - 1, $color);
     }
 
     /**

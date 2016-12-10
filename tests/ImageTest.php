@@ -172,4 +172,35 @@ class ImageTest extends TestCase
         $this->assertEquals($penColor, $image->getPixel(99, 99));
     }
 
+    public function testDrawRectangle()
+    {
+        $image = new Image(100, 100);
+
+        $transparent = new Color(0, 0, 0, 127);
+        $penColor = new Color(0, 0, 0, 0);
+        $pen = new Pen($penColor);
+
+        $image->drawRectangle($pen, 10, 10, 80, 80);
+
+        $expected_9_9 = $transparent;
+        $expected_90_9 = $transparent;
+        $expected_9_90 = $transparent;
+        $expected_90_90 = $transparent;
+
+        $expected_10_10 = $penColor;
+        $expected_10_89 = $penColor;
+        $expected_89_10 = $penColor;
+        $expected_89_89 = $penColor;
+
+        $this->assertEquals($expected_9_9, $image->getPixel(9, 9));
+        $this->assertEquals($expected_90_9, $image->getPixel(90, 9));
+        $this->assertEquals($expected_9_90, $image->getPixel(9, 90));
+        $this->assertEquals($expected_90_90, $image->getPixel(90, 90));
+
+        $this->assertEquals($expected_10_10, $image->getPixel(10, 10));
+        $this->assertEquals($expected_10_89, $image->getPixel(10, 89));
+        $this->assertEquals($expected_89_10, $image->getPixel(89, 10));
+        $this->assertEquals($expected_89_89, $image->getPixel(89, 89));
+    }
+
 }
